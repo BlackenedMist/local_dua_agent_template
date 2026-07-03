@@ -1,3 +1,10 @@
+# agentfiles
+  aqent_duo.py
+  ide_app.py
+  intergrated_ide.py
+  src
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
