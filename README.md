@@ -1,2 +1,7 @@
 # local_dua_agent_template
-A template to create a 
+
+
+Step 1: Open Your Global OpenCode SettingsYou need to put your settings into the central OpenCode configuration file:Windows (WSL / Local): ~/.config/opencode/opencode.jsonMac / Linux: ~/.config/opencode/opencode.jsonIf the directory or file doesn’t exist yet, simply create them manually.Step 2: Paste the Agent Pipeline ConfigPaste the following JSON structure into your opencode.json file. This explicitly maps Qwen2.5-Coder as your primary macro-planning/review agent and StarCoder as your rapid execution/autocomplete engine.
+
+
+Step 3: Triggering Them Together in OpenCodeNow, when you launch OpenCode (opencode in your editor terminal or split window), the two models will play distinct parts:The Lead Setup: Because default_agent is set to "lead-architect", Qwen2.5 handles the primary user interface chat window. It handles tool calls like checking project files and designing structural blueprints.The Assistant Setup: StarCoder2 handles small_model background tasks—meaning anytime OpenCode requires rapid micro-parsing, background syntax lookups, or file changes, it offloads those minor tasks to StarCoder.Targeted Agent Calls: Inside the OpenCode TUI/chat screen, you can also tag them explicitly at any point using the @ symbol. For example:@lead-architect Review this backend repository architecture.@starcoder-dev Turn that architecture spec into a router.ts file.
