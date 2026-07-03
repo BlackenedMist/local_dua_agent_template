@@ -12,6 +12,9 @@ Step 1: Open Your Global OpenCode SettingsYou need to put your settings into the
 Step 3: Triggering Them Together in OpenCodeNow, when you launch OpenCode (opencode in your editor terminal or split window), the two models will play distinct parts:The Lead Setup: Because default_agent is set to "lead-architect", Qwen2.5 handles the primary user interface chat window. It handles tool calls like checking project files and designing structural blueprints.The Assistant Setup: StarCoder2 handles small_model background tasks—meaning anytime OpenCode requires rapid micro-parsing, background syntax lookups, or file changes, it offloads those minor tasks to StarCoder.Targeted Agent Calls: Inside the OpenCode TUI/chat screen, you can also tag them explicitly at any point using the @ symbol. For example:@lead-architect Review this backend repository architecture.@starcoder-dev Turn that architecture spec into a router.ts file.
 
 
+
+
+
 This is going to be a Intergrated IDE / Chat application.
 
 The Main actors in this project are the two local models I have configured to work together ( will change in future ) - putting different models together
@@ -37,6 +40,7 @@ It is designed to run in a docker environment ( This should be the final set of 
 
 
 
+
 This application will contain 
 1 ) a chat Interface  to talk to a developer bot and get feedback , support , error checking , advice or code and documentation
 2 ) A code editor where user can edit the selected file ( with all syntax related the project type ) 
@@ -45,9 +49,18 @@ This application will contain
 4) a history/ report on projects done, tasks 
 5) A To do list and expected dates when to complete - Standard fields ( text area ) ie updated this portion today, found bug , solution , fix etc etc
 6) STT so users can talk 
-7) keep a eye on the system resources that are being used while models are communicaing with each other and give the user the  abilitry to track,scompact or to limit the context_parameters to that are being sent to the models. (if resources are in the danger red levels ) )
+7) dedicate a low-level background daemon using Python’s psutil or NVML (Nvidia Management Library) bindings to query system state. 
+ If VRAM thresholds pass 90% (the Danger Red Level), the backend orchestrator should dynamically slice the active Ollama model request payload context down 
+ (e.g., forcing num_ctx: 2048 instead of 16384) or auto-trigger an Ollama unload endpoint request before the machine locks up
+ Store these heavy interaction history datasets inside   
 8) User wil be able to either send the entire editor page they are working on or a just a snipppet of code in the chat screen.
+9)a hidden project directory configuration folder (e.g., current_project/.aide/)
+ Hidden System Context Tracking (.aide_telemetry/ Pattern)
+ Since your blueprint specifies calculating overall token analytics and generating project performance reports, 
+ this hidden directory serves as your local time-series analytics engine.
 
+
+ 
 
 
 Backend 
@@ -73,6 +86,10 @@ Is going to be a Model Management / status , orchestrator ( Ability to link into
 
 
 Frontend - the Main Developement environment -
+
+
+Stack
+PyQt6’s QDockWidget
 
 We can ceate a workspace where all projects will be stored - vissble = active project or project set ) hidden can be in another directory - same like the templates we will add in
 ( only have one for now, Will get more as project grows. -we wiill start with _writer_template.zip )
@@ -106,7 +123,49 @@ For the Code Editor Component: Use a package like QCodeEditor (if using PyQt) or
 5) A seperate page where the user can see the model and the Agent relationships that have been configured.
 6) a key mapping tool. for developer / writers preferences. crtl Z or cntl -f ( Apply codes formatting and indentation ) 
 
+
+
+The Mic Widget: A circular button floats completely independently of your main AIDE window.
+ You can drag it with your mouse to sit over your left-hand explorer tree or right-hand chat block.
+ The Flashing Feedback Loop: Clicking the button turns it green and flashes red-and-green to provide visual confirmation that the microphone array is reading raw audio processing frames.
+ The Validation Gate: When clicked again to stop recording, a sleek dark intercept dialog box slides open right beside the mic button.
+ The Target Routing Guard: The user interface prevents data injection into your codebase until you manually select the target destination dropdown 
+ (e.g., separating an operational "marching order" for the bots from raw text injection into a specific template file).
+
 Connecting Your Agents: Instead of hardcoding tasks like task_spec,
 you will capture what you type into your custom chat window, pass it as a dynamic variable to
 he Task description, a0nd reload the src/ file in your editor panel when the script finishes.
+
+
+
+📁 aide-workspace-root/
+│
+├── 📁 backend-core/               # The Model Orchestrator & Database Layer
+│   ├── 📄 Dockerfile
+│   ├── 📄 orchestrator.py         # CrewAI / OpenCode pipeline connector
+│   ├── 📄 models_db.json          # Keeps Ollama instances list, ports, and metrics
+│   └── 📄 project_manager.py      # Zip archiving, active vs non-active directory pools
+│
+├── 📁 frontend-desktop/           # The Main Development Environment UI
+│   ├── 📄 Dockerfile
+│   ├── 📄 main_ide.py             # Main PyQt6 App Entry Window
+│   ├── 📁 modules/
+│   │   ├── 📄 code_editor.py      # Tabbed editor window with Monaco/QCodeEditor bindings
+│   │   ├── 📄 file_explorer.py    # Tree widget with workspace filtering & context menus
+│   │   ├── 📄 chat_sidebar.py     # Speech-to-Text (STT) + chat window interaction engine
+│   │   └── 📄 toolbelt.py         # Collapsible footer snippet manager & system charts
+│   └── 📁 themes/                 # 5 configuration theme definitions (JSON mappings)
+│
+└── 📁 workspace/                  # Local Hard-Drive Storage 
+    ├── 📁 active_projects/        # Active Working Set view directories
+    └── 📁 archived_projects/      # Non-active ZIP files
+  
+
+
+
+The blue print 
+
+-> see aide_skeleton.py
+
+
 
