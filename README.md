@@ -1,4 +1,9 @@
 # local_dua_agent_template
+ow this works when you run it:
+You run python agent_duo.py.Qwen2.5-Coder wakes up first,
+ processes your request, and writes a detailed architecture design document
+ .The framework automatically captures Qwen's output and hands it to StarCoder2.S
+ tarCoder2 reads Qwen's design rules and outputs the completed TypeScript/Python code file to your terminal.Would you like me to show you how to expand this script so that it automatically writes the finished code files directly to your hard drive, or would you prefer a UI-based agent tool like Open-WebUI Pipelines instead?
 
 
 Step 1: Open Your Global OpenCode SettingsYou need to put your settings into the central OpenCode configuration file:Windows (WSL / Local): ~/.config/opencode/opencode.jsonMac / Linux: ~/.config/opencode/opencode.jsonIf the directory or file doesn’t exist yet, simply create them manually.Step 2: Paste the Agent Pipeline ConfigPaste the following JSON structure into your opencode.json file. This explicitly maps Qwen2.5-Coder as your primary macro-planning/review agent and StarCoder as your rapid execution/autocomplete engine.
